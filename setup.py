@@ -5,7 +5,7 @@ from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 _src_path = os.path.dirname(os.path.abspath(__file__))
 
 # ref: https://github.com/sxyu/sdf/blob/master/setup.py
-def find_eigen(min_ver=(3, 3, 0)):
+def find_eigen(min_ver=(3, 4, 0)):
     """Helper to find or download the Eigen C++ library"""
     import re, os
     try_paths = [
@@ -36,7 +36,7 @@ def find_eigen(min_ver=(3, 3, 0)):
                     major_ver = int(line[len(MAJOR_VER_STR):])
                 elif line.startswith(MINOR_VER_STR):
                     minor_ver = int(line[len(MAJOR_VER_STR):])
-            if not world_ver or not major_ver or not minor_ver:
+            if world_ver is None or major_ver is None or minor_ver is None:
                 print('Failed to parse macros file', macros_path)
             else:
                 ver = (world_ver, major_ver, minor_ver)
@@ -81,14 +81,14 @@ def find_eigen(min_ver=(3, 3, 0)):
     return eigen_path
 
 nvcc_flags = [
-    '-O3', '-std=c++14',
+    '-O3', '-std=c++17',
     "--expt-extended-lambda",
 	"--expt-relaxed-constexpr",
     '-U__CUDA_NO_HALF_OPERATORS__', '-U__CUDA_NO_HALF_CONVERSIONS__', '-U__CUDA_NO_HALF2_OPERATORS__',
 ]
 
 if os.name == "posix":
-    c_flags = ['-O3', '-std=c++14']
+    c_flags = ['-O3', '-std=c++17']
 elif os.name == "nt":
     c_flags = ['/O2', '/std:c++17']
 
